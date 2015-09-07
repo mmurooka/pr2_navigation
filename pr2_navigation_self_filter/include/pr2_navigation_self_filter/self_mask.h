@@ -436,7 +436,8 @@ struct LinkInfo
           std::string content;
           boost::shared_ptr<urdf::Model> urdfModel;
 
-          if (nh_.getParam("robot_description", content))
+          ros::NodeHandle private_nh_ = ros::NodeHandle("~");
+          if (private_nh_.getParam("robot_description", content))
           {
             urdfModel = boost::shared_ptr<urdf::Model>(new urdf::Model());
             if (!urdfModel->initString(content))
