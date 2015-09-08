@@ -346,6 +346,28 @@ struct LinkInfo
           return getMaskContainment(tf::Vector3(x, y, z));
         }
 	
+        /** \brief Get the containment mask (INSIDE or OUTSIDE) value for an individual point. No
+	    setup is performed, assumeFrame() should be called before use */
+	int  getMaskContainmentforNamedLink(const tf::Vector3 &pt, const std::string name) const
+        {
+          const unsigned int bs = bodies_.size();
+          int out = OUTSIDE;
+          for (unsigned int j = 0 ; out == OUTSIDE && j < bs ; ++j)
+            if (bodies_[j].name == name) {
+              if (bodies_[j].body->containsPoint(pt))
+                out = INSIDE;
+              break;
+            }
+          return out;
+        }
+
+	/** \brief Get the containment mask (INSIDE or OUTSIDE) value for an individual point. No
+	    setup is performed, assumeFrame() should be called before use */
+	int  getMaskContainmentforNamedLink(double x, double y, double z, const std::string name) const
+        {
+          return getMaskContainmentforNamedLink(tf::Vector3(x, y, z), name);
+        }
+
 	/** \brief Get the intersection mask (INSIDE, OUTSIDE or
 	    SHADOW) value for an individual point. No setup is
 	    performed, assumeFrame() should be called before use */
