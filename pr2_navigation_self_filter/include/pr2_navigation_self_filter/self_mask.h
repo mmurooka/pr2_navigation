@@ -172,7 +172,7 @@ struct LinkInfo
 	typedef pcl::PointCloud<PointT> PointCloud;
 
 	/** \brief Construct the filter */
-	SelfMask(tf::TransformListener &tf, const std::vector<LinkInfo> &links) : tf_(tf)
+        SelfMask(tf::TransformListener &tf, const std::vector<LinkInfo> &links, std::string _tf_prefix="") : tf_(tf), tf_prefix(_tf_prefix)
 	{
 	    configure(links);
 	}
@@ -261,8 +261,8 @@ struct LinkInfo
     for (unsigned int i = 0 ; i < bs ; ++i)
     {
       std::string err;
-      if(!tf_.waitForTransform(header.frame_id, bodies_[i].name, header.stamp, ros::Duration(.1), ros::Duration(.01), &err)) {
-        ROS_ERROR("WaitForTransform timed out from %s to %s after 100ms.  Error string: %s", bodies_[i].name.c_str(), header.frame_id.c_str(), err.c_str());
+      if(!tf_.waitForTransform(header.frame_id, tf_prefix+bodies_[i].name, header.stamp, ros::Duration(.1), ros::Duration(.01), &err)) {
+        ROS_ERROR("WaitForTransform timed out from %s to %s after 100ms.  Error string: %s", (tf_prefix+bodies_[i].name).c_str(), header.frame_id.c_str(), err.c_str());
         
       } 
       
@@ -270,12 +270,12 @@ struct LinkInfo
       tf::StampedTransform transf;
       try
       {
-        tf_.lookupTransform(header.frame_id, bodies_[i].name, header.stamp, transf);
+        tf_.lookupTransform(header.frame_id, tf_prefix+bodies_[i].name, header.stamp, transf);
       }
       catch(tf::TransformException& ex)
       {
         transf.setIdentity();
-        ROS_ERROR("Unable to lookup transform from %s to %s. Exception: %s", bodies_[i].name.c_str(), header.frame_id.c_str(), ex.what());	
+        ROS_ERROR("Unable to lookup transform from %s to %s. Exception: %s", (tf_prefix+bodies_[i].name).c_str(), header.frame_id.c_str(), ex.what());	
       }
       
       // set it for each body; we also include the offset specified in URDF
@@ -658,6 +658,7 @@ struct LinkInfo
         }
 	
 	tf::TransformListener              &tf_;
+        std::string                        tf_prefix;
 	ros::NodeHandle                     nh_;
 	
 	tf::Vector3                           sensor_pos_;
