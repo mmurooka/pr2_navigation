@@ -270,7 +270,8 @@ struct LinkInfo
       tf::StampedTransform transf;
       try
       {
-        tf_.lookupTransform(header.frame_id, tf_prefix+bodies_[i].name, header.stamp, transf);
+        tf_.lookupTransform(header.frame_id, tf_prefix+bodies_[i].name, ros::Time(0), transf);
+        // tf_.lookupTransform(header.frame_id, tf_prefix+bodies_[i].name, header.stamp, transf);
       }
       catch(tf::TransformException& ex)
       {
@@ -314,7 +315,8 @@ struct LinkInfo
           try
           {
             tf::StampedTransform transf;
-            tf_.lookupTransform(header.frame_id, sensor_frame, header.stamp, transf);
+            tf_.lookupTransform(header.frame_id, sensor_frame, ros::Time(0), transf);
+            // tf_.lookupTransform(header.frame_id, sensor_frame, header.stamp, transf);
             sensor_pos_ = transf.getOrigin();
           }
           catch(tf::TransformException& ex)
